@@ -362,7 +362,7 @@ export function ClaimPositionModal({
         </button>
 
         {/* Header */}
-        <div className="border-b border-hairline border-ink/10 pb-6">
+        <div className="border-b-hairline border-ink/10 pb-6">
             <h3 id="claim-modal-title" className="font-display text-xl font-bold">{t('claimModal.title', { position })}</h3>
           <p className="mt-1.5 text-xs text-ink-60">{t('claimModal.subtitle')}</p>
         </div>

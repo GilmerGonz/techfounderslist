@@ -123,7 +123,7 @@ export function SubmitCompanyModal({
               <X className="h-5 w-5" strokeWidth={1.5} />
             </button>
 
-            <div className="border-b border-hairline border-ink/10 pb-4">
+            <div className="border-b-hairline border-ink/10 pb-4">
               <h3 id="submit-modal-title" className="font-display text-xl font-bold">{t('submit.title')}</h3>
               <p className="mt-1 text-xs text-ink-60">{t('submit.subtitle')}</p>
             </div>

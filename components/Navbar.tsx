@@ -62,7 +62,7 @@ export function Navbar({
     <header
       className={clsx(
         'sticky top-0 z-40 w-full bg-paper transition-colors',
-        scrolled ? 'border-b border-ink/20' : 'border-b border-hairline'
+        scrolled ? 'border-b border-ink/20' : 'border-b-hairline'
       )}
       style={{ height: 56 }}
     >

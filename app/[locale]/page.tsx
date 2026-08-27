@@ -126,7 +126,7 @@ export default function HomePage({ params: { locale } }: { params: { locale: str
         <LiveActivityFeed locale={locale} categorySlug={activeCategorySlug} t={t as any} />
       </main>
 
-      <footer className="border-t border-hairline bg-paper">
+      <footer className="border-t-hairline bg-paper">
         <div className="mx-auto flex max-w-content flex-col items-center justify-between gap-3 px-4 py-8 text-xs text-ink-60 sm:flex-row sm:px-8">
           <div className="font-display text-sm font-semibold text-ink">The Tech Founders List</div>
           <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
