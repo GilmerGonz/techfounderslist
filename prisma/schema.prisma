@@ -1,0 +1,138 @@
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Category {
+  id        String   @id @default(uuid()) @db.Uuid
+  slug      String   @unique
+  name      String
+  createdAt DateTime @default(now()) @map("created_at")
+
+  companies             Company[]
+  claims                PositionClaim[]
+  currentIndices        CurrentIndex[]
+  positionHistories     PositionHistory[]
+  autoDefendSubscriptions AutoDefendSubscription[]
+
+  @@map("categories")
+}
+
+model Company {
+  id               String   @id @default(uuid()) @db.Uuid
+  categoryId       String   @map("category_id") @db.Uuid
+  name             String
+  url              String
+  logoUrl          String?  @map("logo_url")
+  description      String?
+  ownerEmail       String   @map("owner_email")
+  emailVerified    Boolean  @default(false) @map("email_verified")
+  companyVerified  Boolean  @default(false) @map("company_verified")
+  // PayPal Vault payment token captured from the buyer's last successful
+  // (non-demo) checkout. Lets AutoDefend re-charge this exact payment method
+  // later without the owner present, PROVIDED the merchant PayPal account has
+  // Reference Transactions/Vault enabled (see lib/paypal.ts).
+  paypalVaultId    String?  @map("paypal_vault_id")
+  // Minimal accounting record collected at checkout, for the operator's own
+  // bookkeeping (e.g. reconciling PayPal payouts by country/VAT number).
+  // Optional and self-reported — no invoice/receipt is generated or emailed;
+  // that remains a separate decision (needs an email provider).
+  billingCountry   String?  @map("billing_country")
+  billingTaxId     String?  @map("billing_tax_id")
+  createdAt        DateTime @default(now()) @map("created_at")
+
+  category                Category                @relation(fields: [categoryId], references: [id])
+  translations            CompanyTranslation[]
+  claims                  PositionClaim[]
+  currentIndices          CurrentIndex[]
+  positionHistories       PositionHistory[]
+  autoDefendSubscriptions AutoDefendSubscription[]
+
+  @@map("companies")
+}
+
+model CompanyTranslation {
+  companyId   String  @map("company_id") @db.Uuid
+  locale      String
+  description String?
+
+  company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  @@id([companyId, locale])
+  @@map("company_translations")
+}
+
+model PositionClaim {
+  id               String   @id @default(uuid()) @db.Uuid
+  companyId        String   @map("company_id") @db.Uuid
+  categoryId       String   @map("category_id") @db.Uuid
+  amountCents      Int      @map("amount_cents")
+  position         Int
+  paymentRefId     String   @unique @map("payment_ref_id")
+  paymentProvider  String   @default("paypal") @map("payment_provider")
+  status           String   @default("pending") // pending | confirmed | failed | refunded
+  createdAt        DateTime @default(now()) @map("created_at")
+
+  company  Company  @relation(fields: [companyId], references: [id])
+  category Category @relation(fields: [categoryId], references: [id])
+
+  @@map("position_claims")
+}
+
+model CurrentIndex {
+  categoryId         String   @map("category_id") @db.Uuid
+  position           Int
+  companyId          String   @map("company_id") @db.Uuid
+  currentAmountCents Int      @map("current_amount_cents")
+  heldSince          DateTime @default(now()) @map("held_since")
+
+  category Category @relation(fields: [categoryId], references: [id])
+  company  Company  @relation(fields: [companyId], references: [id])
+
+  @@id([categoryId, position], name: "category_id_position")
+  @@map("current_index")
+}
+
+model PositionHistory {
+  id              String    @id @default(uuid()) @db.Uuid
+  companyId       String    @map("company_id") @db.Uuid
+  categoryId      String    @map("category_id") @db.Uuid
+  position        Int
+  startedAt       DateTime  @default(now()) @map("started_at")
+  endedAt         DateTime? @map("ended_at")
+  durationSeconds Int?      @map("duration_seconds")
+
+  company  Company  @relation(fields: [companyId], references: [id])
+  category Category @relation(fields: [categoryId], references: [id])
+
+  @@map("position_history")
+}
+
+model AutoDefendSubscription {
+  id             String   @id @default(uuid()) @db.Uuid
+  companyId      String   @map("company_id") @db.Uuid
+  categoryId     String   @map("category_id") @db.Uuid
+  position       Int
+  // Ceiling on what the system will auto-charge on the owner's behalf per
+  // reclaim attempt. Never exceeded, regardless of how high the position's
+  // price has climbed.
+  maxAmountCents Int      @map("max_amount_cents")
+  // Snapshot of the PayPal Vault token to charge, copied from Company.paypalVaultId
+  // when the subscription is created (so revoking/replacing the company's
+  // saved card later doesn't silently change what an active subscription bills).
+  paypalVaultId  String   @map("paypal_vault_id")
+  active         Boolean  @default(true)
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
+
+  company  Company  @relation(fields: [companyId], references: [id])
+  category Category @relation(fields: [categoryId], references: [id])
+
+  @@unique([companyId, categoryId, position], name: "company_id_category_id_position")
+  @@map("auto_defend_subscriptions")
+}
