@@ -55,7 +55,7 @@
     "billingCountry": "Paese di fatturazione (opzionale)",
     "billingCountryPlaceholder": "es. Italia",
     "billingTaxId": "Partita IVA (opzionale)",
-    "billingTaxIdPlaceholder": "Per la tua contabilità",
+    "billingTaxIdPlaceholder": "Per la contabilità",
     "bidAmount": "Capitale impegnato (USD)",
     "minimumNotice": "Il minimo è {amount}",
     "payButton": "Impegna capitale \u2014 {amount}",

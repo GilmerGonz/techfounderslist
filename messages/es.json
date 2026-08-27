@@ -55,7 +55,7 @@
     "billingCountry": "País de facturación (opcional)",
     "billingCountryPlaceholder": "ej. España",
     "billingTaxId": "NIF/CIF/RUC (opcional)",
-    "billingTaxIdPlaceholder": "Para tu propio registro contable",
+    "billingTaxIdPlaceholder": "Para tu contabilidad",
     "bidAmount": "Capital comprometido (USD)",
     "minimumNotice": "El mínimo es {amount}",
     "payButton": "Comprometer capital \u2014 {amount}",

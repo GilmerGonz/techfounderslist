@@ -55,7 +55,7 @@
     "billingCountry": "Billing country (optional)",
     "billingCountryPlaceholder": "e.g., United States",
     "billingTaxId": "Tax/VAT ID (optional)",
-    "billingTaxIdPlaceholder": "For your own records",
+    "billingTaxIdPlaceholder": "For your records",
     "bidAmount": "Capital committed (USD)",
     "minimumNotice": "Minimum is {amount}",
     "payButton": "Commit capital \u2014 {amount}",

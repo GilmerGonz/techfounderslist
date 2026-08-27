@@ -55,7 +55,7 @@
     "billingCountry": "Rechnungsland (optional)",
     "billingCountryPlaceholder": "z. B. Deutschland",
     "billingTaxId": "USt-IdNr. (optional)",
-    "billingTaxIdPlaceholder": "Für deine eigene Buchhaltung",
+    "billingTaxIdPlaceholder": "Für deine Buchhaltung",
     "bidAmount": "Eingesetztes Kapital (USD)",
     "minimumNotice": "Minimum ist {amount}",
     "payButton": "Kapital einsetzen \u2014 {amount}",

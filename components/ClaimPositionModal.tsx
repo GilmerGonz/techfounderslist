@@ -506,7 +506,7 @@ export function ClaimPositionModal({
                   type="url"
                   value={logoUrl}
                   onChange={(e) => setLogoUrl(e.target.value)}
-                  placeholder="https://example.com/logo.png"
+                  placeholder="https://.../logo.png"
                   className="w-full rounded-sm border-hairline border-ink/15 bg-white px-4 py-2.5 text-sm placeholder:text-ink-30"
                 />
               </label>

@@ -29,3 +29,6 @@ dev.err
 
 # generated SQL helper (contains no secrets, but is a one-off scratch file)
 supabase_setup.sql
+
+.vercel
+.env*

@@ -207,7 +207,7 @@ export function SubmitCompanyModal({
                     type="url"
                     value={logoUrl}
                     onChange={(e) => setLogoUrl(e.target.value)}
-                    placeholder="https://example.com/logo.png"
+                    placeholder="https://.../logo.png"
                     className={inputClass}
                   />
                 </label>
