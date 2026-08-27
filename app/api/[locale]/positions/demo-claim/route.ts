@@ -16,12 +16,16 @@ import { rateLimit, getClientIp } from '@/lib/rateLimit';
  * the same atomic claim path as the real capture (token verification, minimum
  * check, claimPosition, immutable record) but without moving real money.
  *
- * SECURITY: hard-disabled in production (PAYPAL_MODE === 'live').
+ * SECURITY: hard-disabled the moment real PayPal credentials are configured
+ * (not just when PAYPAL_MODE === 'live') — a sandbox deployment still moves
+ * real ownership of positions, so the free bypass must close as soon as the
+ * real checkout path becomes available, regardless of sandbox vs. live.
  */
 export async function POST(request: NextRequest) {
-  if (process.env.PAYPAL_MODE === 'live') {
+  const paypalConfigured = !!(process.env.PAYPAL_CLIENT_ID && process.env.PAYPAL_CLIENT_SECRET);
+  if (paypalConfigured || process.env.PAYPAL_MODE === 'live') {
     return NextResponse.json(
-      { success: false, error: 'Demo claim is disabled in production.' },
+      { success: false, error: 'Demo claim is disabled once PayPal is configured.' },
       { status: 403 }
     );
   }
