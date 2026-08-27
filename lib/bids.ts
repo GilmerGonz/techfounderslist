@@ -233,8 +233,8 @@ const mockStore: MockStore =
   globalForStore.__tflMockStore ??
   (globalForStore.__tflMockStore = {
     categories: [
-      { id: 'cat-ai', slug: 'ai', name: 'AI', createdAt: new Date() },
       { id: 'cat-saas', slug: 'saas', name: 'SaaS', createdAt: new Date() },
+      { id: 'cat-ai', slug: 'ai', name: 'AI', createdAt: new Date() },
       { id: 'cat-fintech', slug: 'fintech', name: 'Fintech', createdAt: new Date() },
       { id: 'cat-infra', slug: 'infra', name: 'Infra', createdAt: new Date() },
       { id: 'cat-consumer', slug: 'consumer', name: 'Consumer', createdAt: new Date() },
