@@ -36,13 +36,13 @@ function RotatingPhrase({ phrases, intervalMs = 3800 }: { phrases: string[]; int
             timeoutId = window.setTimeout(tick, intervalMs);
           },
         })
-          .to(el, { y: -5, filter: 'blur(9px)', opacity: 0, duration: 0.7, ease: 'sine.inOut' })
+          .to(el, { y: -5, filter: 'blur(6px)', opacity: 0, duration: 0.7, ease: 'sine.inOut' })
           .call(() => {
             el.textContent = phrases[next];
           })
           .fromTo(
             el,
-            { y: 5, filter: 'blur(9px)', opacity: 0 },
+            { y: 5, filter: 'blur(6px)', opacity: 0 },
             { y: 0, filter: 'blur(0px)', opacity: 1, duration: 1.3, ease: 'sine.out' },
             '-=0.15'
           );
@@ -55,7 +55,11 @@ function RotatingPhrase({ phrases, intervalMs = 3800 }: { phrases: string[]; int
   );
 
   return (
-    <span ref={elRef} className="inline-block text-ledger-green">
+    <span
+      ref={elRef}
+      className="inline-block whitespace-nowrap text-ledger-green"
+      style={{ willChange: 'transform, opacity, filter' }}
+    >
       {phrases[0]}
     </span>
   );
