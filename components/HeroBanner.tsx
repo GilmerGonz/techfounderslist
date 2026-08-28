@@ -7,6 +7,60 @@ import { IndexTicker } from './TelemetryTicker';
 
 gsap.registerPlugin(useGSAP);
 
+/**
+ * Rotates through a list of short phrases with a vertical blur-flip
+ * (old phrase blurs/slides out upward, new one blurs/slides in from below) —
+ * the same beat as Vercel's domain-search headline. Respects
+ * prefers-reduced-motion by freezing on the first phrase.
+ */
+function RotatingPhrase({ phrases, intervalMs = 2600 }: { phrases: string[]; intervalMs?: number }) {
+  const elRef = useRef<HTMLSpanElement>(null);
+
+  useGSAP(
+    () => {
+      if (phrases.length < 2) return;
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+      const el = elRef.current;
+      if (!el) return;
+
+      let index = 0;
+      let timeoutId: number;
+
+      const tick = () => {
+        const next = (index + 1) % phrases.length;
+        gsap.timeline({
+          onComplete: () => {
+            index = next;
+            timeoutId = window.setTimeout(tick, intervalMs);
+          },
+        })
+          .to(el, { yPercent: -100, filter: 'blur(6px)', opacity: 0, duration: 0.35, ease: 'power2.in' })
+          .call(() => {
+            el.textContent = phrases[next];
+          })
+          .fromTo(
+            el,
+            { yPercent: 100, filter: 'blur(6px)', opacity: 0 },
+            { yPercent: 0, filter: 'blur(0px)', opacity: 1, duration: 0.5, ease: 'power3.out' }
+          );
+      };
+
+      timeoutId = window.setTimeout(tick, intervalMs);
+      return () => window.clearTimeout(timeoutId);
+    },
+    { scope: elRef, dependencies: [phrases, intervalMs] }
+  );
+
+  return (
+    <span className="inline-block overflow-hidden align-bottom">
+      <span ref={elRef} className="inline-block text-ledger-green">
+        {phrases[0]}
+      </span>
+    </span>
+  );
+}
+
 interface HeroBannerProps {
   categoryName: string;
   /** Current #1 amount in cents (or null when spot is open) */
@@ -56,7 +110,8 @@ export function HeroBanner({ categoryName, topAmountCents, topHolderName, t }: H
       </p>
 
       <h1 data-hero-reveal className="mt-3 max-w-3xl font-display text-3xl font-bold leading-[1.1] text-ink sm:text-4xl lg:text-5xl">
-        {t('hero.headline')}
+        {t('hero.headlinePrefix')}{' '}
+        <RotatingPhrase phrases={(t as any).raw('hero.headlineRotating') as string[]} />
       </h1>
 
       <p data-hero-reveal className="mt-4 max-w-xl text-[17px] leading-relaxed text-ink-60">{t('hero.support')}</p>

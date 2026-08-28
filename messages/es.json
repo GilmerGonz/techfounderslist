@@ -17,7 +17,8 @@
   },
   "hero": {
     "liveIn": "En vivo \u00b7 {category}",
-    "headline": "Un índice de empresas tecnológicas, ordenado por capital comprometido.",
+    "headlinePrefix": "Un índice de empresas tecnológicas, ordenado por",
+    "headlineRotating": ["capital comprometido.", "quién apostó primero.", "convicción, no clics.", "dinero real, no promesas."],
     "support": "Reclama una posición comprometiendo más capital que el titular actual. El aumento mínimo es $1.",
     "topSpotLabel": "#1 ahora mismo: {name}",
     "topSpotHint": "El titular actual ha comprometido este monto.",
