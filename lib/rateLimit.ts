@@ -28,17 +28,27 @@ export interface RateLimitOpts {
   max: number; // max requests per window
 }
 
-function redisIncr(key: string, ttlSec: number): Promise<number> {
-  const url = `${UPSTASH_URL}/incr/${encodeURIComponent(key)}?EX=${ttlSec}`;
-  return fetch(url, {
+async function redisIncr(key: string, ttlSec: number): Promise<number> {
+  // INCR has no built-in TTL option (that's SET ... EX). Pipeline it with an
+  // EXPIRE that only takes effect on the first request of the window (NX),
+  // so later requests in the same window don't keep pushing the reset back.
+  const res = await fetch(`${UPSTASH_URL}/pipeline`, {
     method: 'POST',
-    headers: { Authorization: `Bearer ${UPSTASH_TOKEN}` },
-  })
-    .then((r) => r.json())
-    .then((body: any) => {
-      if (body?.error) throw new Error(body.error);
-      return Number(body?.result ?? 0);
-    });
+    headers: {
+      Authorization: `Bearer ${UPSTASH_TOKEN}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify([
+      ['INCR', key],
+      ['EXPIRE', key, String(ttlSec), 'NX'],
+    ]),
+  });
+  const body: any = await res.json();
+  if (!Array.isArray(body)) throw new Error(JSON.stringify(body));
+  const [incrResult, expireResult] = body;
+  if (incrResult?.error) throw new Error(incrResult.error);
+  if (expireResult?.error) throw new Error(expireResult.error);
+  return Number(incrResult?.result ?? 0);
 }
 
 /**
