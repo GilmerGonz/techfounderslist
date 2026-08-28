@@ -23,6 +23,9 @@ const UPSTASH_URL = process.env.UPSTASH_REDIS_REST_URL;
 const UPSTASH_TOKEN = process.env.UPSTASH_REDIS_REST_TOKEN;
 const useRedis = !!(UPSTASH_URL && UPSTASH_TOKEN);
 
+// TODO(verify-upstash): remove this line after confirming rate limiter uses Redis in prod
+console.log('[rateLimit] useRedis =', useRedis, 'url?', !!UPSTASH_URL, 'token?', !!UPSTASH_TOKEN);
+
 export interface RateLimitOpts {
   windowMs: number; // time window in ms
   max: number; // max requests per window
