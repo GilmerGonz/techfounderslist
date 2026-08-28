@@ -18,7 +18,7 @@
   "hero": {
     "liveIn": "Live \u00b7 {category}",
     "headlinePrefix": "An index of tech companies, ordered by",
-    "headlineRotating": ["committed capital.", "who's actually taking the risk.", "conviction, not clicks.", "who backs up their word."],
+    "headlineRotating": ["committed capital.", "real conviction.", "genuine risk.", "public commitment."],
     "support": "Claim a position by committing more capital than the current holder. The minimum increase is $1.",
     "topSpotLabel": "#1 right now: {name}",
     "topSpotHint": "The current position holder has committed this amount.",
