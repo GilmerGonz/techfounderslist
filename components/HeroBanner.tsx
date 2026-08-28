@@ -8,59 +8,62 @@ import { IndexTicker } from './TelemetryTicker';
 gsap.registerPlugin(useGSAP);
 
 /**
- * Rotates through a list of short phrases with a restrained drift-and-blur
- * crossfade — a few px of travel, not a full line-height slide. The exit and
- * entrance overlap slightly so the eye reads it as one continuous motion
- * rather than two discrete steps. Respects prefers-reduced-motion by
- * freezing on the first phrase.
+ * Rotates through a list of short phrases as a true crossfade: the outgoing
+ * and incoming phrases are two separate elements stacked in the same grid
+ * cell, animating at the same time (not sequentially) — one drifts down and
+ * blurs away while the other drifts in and sharpens, so they visibly cross
+ * through each other instead of one abruptly vanishing before the next
+ * appears. Respects prefers-reduced-motion by freezing on the first phrase.
  */
 function RotatingPhrase({ phrases, intervalMs = 3800 }: { phrases: string[]; intervalMs?: number }) {
-  const elRef = useRef<HTMLSpanElement>(null);
+  const containerRef = useRef<HTMLSpanElement>(null);
 
   useGSAP(
     () => {
       if (phrases.length < 2) return;
       if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
-      const el = elRef.current;
-      if (!el) return;
+      const container = containerRef.current;
+      if (!container) return;
 
       let index = 0;
       let timeoutId: number;
 
       const tick = () => {
+        const outgoing = container.firstElementChild as HTMLElement | null;
+        if (!outgoing) return;
         const next = (index + 1) % phrases.length;
+
+        const incoming = outgoing.cloneNode(false) as HTMLElement;
+        incoming.textContent = phrases[next];
+        gsap.set(incoming, { y: 6, opacity: 0, filter: 'blur(6px)' });
+        container.appendChild(incoming);
+
         gsap.timeline({
           onComplete: () => {
+            outgoing.remove();
             index = next;
             timeoutId = window.setTimeout(tick, intervalMs);
           },
         })
-          .to(el, { y: -5, filter: 'blur(6px)', opacity: 0, duration: 0.7, ease: 'sine.inOut' })
-          .call(() => {
-            el.textContent = phrases[next];
-          })
-          .fromTo(
-            el,
-            { y: 5, filter: 'blur(6px)', opacity: 0 },
-            { y: 0, filter: 'blur(0px)', opacity: 1, duration: 1.3, ease: 'sine.out' },
-            '-=0.15'
-          );
+          .to(outgoing, { y: -6, filter: 'blur(6px)', opacity: 0, duration: 1.1, ease: 'sine.inOut' }, 0)
+          .to(incoming, { y: 0, filter: 'blur(0px)', opacity: 1, duration: 1.1, ease: 'sine.inOut' }, 0);
       };
 
       timeoutId = window.setTimeout(tick, intervalMs);
       return () => window.clearTimeout(timeoutId);
     },
-    { scope: elRef, dependencies: [phrases, intervalMs] }
+    { scope: containerRef, dependencies: [phrases, intervalMs] }
   );
 
   return (
-    <span
-      ref={elRef}
-      className="inline-block whitespace-nowrap text-ledger-green"
-      style={{ willChange: 'transform, opacity, filter' }}
-    >
-      {phrases[0]}
+    <span ref={containerRef} className="relative inline-grid text-ledger-green">
+      <span
+        className="inline-block whitespace-nowrap"
+        style={{ gridArea: '1 / 1', willChange: 'transform, opacity, filter' }}
+      >
+        {phrases[0]}
+      </span>
     </span>
   );
 }
