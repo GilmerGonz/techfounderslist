@@ -7,6 +7,7 @@ import {
 } from '@/lib/bids';
 import { createPayPalOrder } from '@/lib/paypal';
 import { rateLimit, getClientIp } from '@/lib/rateLimit';
+import { verifyTurnstileToken } from '@/lib/turnstile';
 
 /**
  * POST /api/[locale]/positions/checkout
@@ -32,7 +33,15 @@ export async function POST(request: NextRequest) {
   }
   try {
     const body = await request.json();
-    const { companyId, companyToken, categoryId, position, amountCents } = body;
+    const { companyId, companyToken, categoryId, position, amountCents, turnstileToken } = body;
+
+    // Anti-bot: only enforced when Turnstile is configured (no-op otherwise).
+    if (!(await verifyTurnstileToken(turnstileToken, ip))) {
+      return NextResponse.json(
+        { success: false, error: 'Captcha verification failed. Please try again.' },
+        { status: 403 }
+      );
+    }
 
     if (
       !companyId ||

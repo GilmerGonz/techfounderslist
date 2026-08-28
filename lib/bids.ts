@@ -2,6 +2,20 @@ import { prisma } from './db';
 import crypto from 'crypto';
 import { chargeVaultedPayPal, refundPayPalCapture } from './paypal';
 
+// ── Test seam ────────────────────────────────────────────────────────────────
+// Lets the test suite stub PayPal's network calls so AutoDefend can be exercised
+// without real charges. Defaults to the production implementations; this is a
+// no-op at runtime (nothing overrides the seam outside of tests).
+let _chargeVaultedPayPal = chargeVaultedPayPal;
+let _refundPayPalCapture = refundPayPalCapture;
+export function __setPaypalMocks(opts: {
+  chargeVaultedPayPal?: typeof chargeVaultedPayPal;
+  refundPayPalCapture?: typeof refundPayPalCapture;
+}): void {
+  if (opts.chargeVaultedPayPal) _chargeVaultedPayPal = opts.chargeVaultedPayPal;
+  if (opts.refundPayPalCapture) _refundPayPalCapture = opts.refundPayPalCapture;
+}
+
 export class InsufficientAmountError extends Error {
   minRequiredCents: number;
   constructor(minRequiredCents: number) {
@@ -1021,7 +1035,7 @@ export async function triggerAutoDefend(
 
   let captureId: string;
   try {
-    const charge = await chargeVaultedPayPal(sub.paypalVaultId, quote.minRequiredCents, 'USD', meta);
+    const charge = await _chargeVaultedPayPal(sub.paypalVaultId, quote.minRequiredCents, 'USD', meta);
     captureId = charge.captureId;
   } catch (err: any) {
     console.error(`AutoDefend: charge failed for company ${displacedCompanyId}:`, err.message);
@@ -1052,7 +1066,7 @@ export async function triggerAutoDefend(
     // capture path does.
     console.error(`AutoDefend: reclaim failed after charge for company ${displacedCompanyId}:`, err.message);
     try {
-      await refundPayPalCapture(captureId, quote.minRequiredCents);
+      await _refundPayPalCapture(captureId, quote.minRequiredCents);
       await recordClaim({
         companyId: displacedCompanyId,
         categoryId,

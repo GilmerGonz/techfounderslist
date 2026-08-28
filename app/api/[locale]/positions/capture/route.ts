@@ -11,6 +11,8 @@ import {
 } from '@/lib/bids';
 import { capturePayPalOrder, refundPayPalCapture } from '@/lib/paypal';
 import { rateLimit, getClientIp } from '@/lib/rateLimit';
+import { sendClaimReceipt } from '@/lib/email';
+import { prisma } from '@/lib/db';
 
 /**
  * POST /api/[locale]/positions/capture
@@ -118,6 +120,24 @@ export async function POST(request: NextRequest) {
           paymentProvider: 'paypal',
           status: 'confirmed',
         });
+
+        // Best-effort receipt email — never let this turn a confirmed payment
+        // into an error for the buyer.
+        prisma.company
+          .findUnique({ where: { id: companyId }, select: { ownerEmail: true, name: true } })
+          .then((company) => {
+            if (company?.ownerEmail) {
+              return sendClaimReceipt({
+                to: company.ownerEmail,
+                companyName: company.name,
+                position,
+                amountCents,
+                currency: 'USD',
+                captureId,
+              });
+            }
+          })
+          .catch((err) => console.error('sendClaimReceipt failed:', err));
 
         // Best-effort side effects — never let these turn an already-confirmed
         // payment into an error response for the paying buyer.

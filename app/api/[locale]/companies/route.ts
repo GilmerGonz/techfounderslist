@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createCompany } from '@/lib/bids';
 import { rateLimit, getClientIp, isValidEmail, isValidLogoUrl } from '@/lib/rateLimit';
+import { verifyTurnstileToken } from '@/lib/turnstile';
 
 export async function POST(request: NextRequest) {
   const response = NextResponse.next();
@@ -15,7 +16,15 @@ export async function POST(request: NextRequest) {
 
   try {
     const body = await request.json();
-    const { categoryId, name, url, logoUrl, description, ownerEmail, billingCountry, billingTaxId } = body;
+    const { categoryId, name, url, logoUrl, description, ownerEmail, billingCountry, billingTaxId, turnstileToken } = body;
+
+    // Anti-bot: only enforced when Turnstile is configured (no-op otherwise).
+    if (!(await verifyTurnstileToken(turnstileToken, ip))) {
+      return NextResponse.json(
+        { success: false, error: 'Captcha verification failed. Please try again.' },
+        { status: 403 }
+      );
+    }
 
     if (!categoryId || !name || !url || !ownerEmail) {
       return NextResponse.json(

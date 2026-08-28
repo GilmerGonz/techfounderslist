@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { PayPalScriptProvider, PayPalButtons } from '@paypal/react-paypal-js';
 import { X, ShieldAlert, CheckCircle2, Loader2, AlertTriangle, RotateCcw } from 'lucide-react';
+import { TurnstileWidget } from './TurnstileWidget';
 
 const paypalClientId = process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID;
 
@@ -105,6 +106,7 @@ export function ClaimPositionModal({
   const [orderId, setOrderId] = useState<string | null>(null);
   const [processing, setProcessing] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
 
   // Demo-mode state (no PayPal configured)
   const [companyId, setCompanyId] = useState<string | null>(null);
@@ -125,6 +127,7 @@ export function ClaimPositionModal({
     setCompanyToken(null);
     setClaimAmountCents(0);
     setLoadingQuote(true);
+    setTurnstileToken(null);
 
     // FIX D-01: Reset all form fields
     setCompanyName('');
@@ -237,6 +240,7 @@ export function ClaimPositionModal({
             ownerEmail,
             billingCountry: billingCountry || undefined,
             billingTaxId: billingTaxId || undefined,
+            turnstileToken: turnstileToken ?? undefined,
           }),
         });
         const companyData = await companyRes.json();
@@ -265,11 +269,12 @@ export function ClaimPositionModal({
            companyId: activeCompanyId,
            companyToken: activeCompanyToken,
            categoryId,
-           position,
-           amountCents,
-         }),
-       });
-       const checkoutData = await checkoutRes.json();
+            position,
+            amountCents,
+            turnstileToken: turnstileToken ?? undefined,
+          }),
+        });
+        const checkoutData = await checkoutRes.json();
        if (!checkoutData.success) throw new Error(checkoutData.error || 'Checkout failed');
 
        // Demo mode: no real PayPal order — simulate capture client-side
@@ -570,6 +575,8 @@ export function ClaimPositionModal({
                 />
               </div>
             </div>
+
+              <TurnstileWidget onTokenChange={setTurnstileToken} action="claim_position" />
 
               <button
                 type="submit"

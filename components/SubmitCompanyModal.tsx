@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { X, Loader2 } from 'lucide-react';
+import { TurnstileWidget } from './TurnstileWidget';
 
 interface SubmitCompanyModalProps {
   isOpen: boolean;
@@ -34,6 +35,7 @@ export function SubmitCompanyModal({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
 
   // Default the category once the list loads (categories arrive after mount,
   // so the initial useState value is often empty).
@@ -71,6 +73,7 @@ export function SubmitCompanyModal({
           ownerEmail,
           billingCountry: billingCountry || undefined,
           billingTaxId: billingTaxId || undefined,
+          turnstileToken: turnstileToken ?? undefined,
         }),
       });
 
@@ -248,6 +251,7 @@ export function SubmitCompanyModal({
               </div>
 
               <div className="flex justify-end pt-2">
+                <TurnstileWidget onTokenChange={setTurnstileToken} action="submit_company" />
                 <button
                   type="submit"
                   disabled={loading}

@@ -9,6 +9,7 @@
     "start": "next start",
     "lint": "next lint",
     "test": "tsx tests/claimPosition.test.ts",
+    "test:autodefend": "tsx tests/autoDefend.test.ts",
     "prisma:generate": "prisma generate",
     "prisma:db:push": "prisma db push"
   },
