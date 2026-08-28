@@ -66,15 +66,15 @@ export interface PayPalBidMeta {
  * Transactions; si no lo tiene, PayPal simplemente no vaultea y el resto del
  * pago sigue funcionando con normalidad.
  */
-export async function createPayPalOrder(
+async function createOrderRequest(
   amountCents: number,
   currency: string,
   meta: PayPalBidMeta,
-  opts: { vault?: boolean; returnUrl?: string; cancelUrl?: string } = {}
-): Promise<{ id: string }> {
+  opts: { vault?: boolean; returnUrl?: string; cancelUrl?: string }
+): Promise<Response> {
   const token = await getPayPalAccessToken();
 
-  const res = await fetch(`${PAYPAL_BASE}/v2/checkout/orders`, {
+  return fetch(`${PAYPAL_BASE}/v2/checkout/orders`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -116,6 +116,29 @@ export async function createPayPalOrder(
         : {}),
     }),
   });
+}
+
+export async function createPayPalOrder(
+  amountCents: number,
+  currency: string,
+  meta: PayPalBidMeta,
+  opts: { vault?: boolean; returnUrl?: string; cancelUrl?: string } = {}
+): Promise<{ id: string }> {
+  let res = await createOrderRequest(amountCents, currency, meta, opts);
+
+  // The merchant account may not have Vault/Reference Transactions enabled
+  // (common right after switching to Live — sandbox often has it by
+  // default). AutoDefend enrollment is a nice-to-have; the actual position
+  // claim payment must never fail just because vaulting isn't available.
+  if (!res.ok && opts.vault) {
+    const err = await res.text();
+    if (err.includes('NOT_ENABLED_TO_VAULT_PAYMENT_SOURCE')) {
+      console.warn('PayPal: merchant account cannot vault payment sources — retrying without vaulting.');
+      res = await createOrderRequest(amountCents, currency, meta, { ...opts, vault: false });
+    } else if (!res.ok) {
+      throw new Error(`PayPal createOrder falló (${res.status}): ${err}`);
+    }
+  }
 
   if (!res.ok) {
     const err = await res.text();
