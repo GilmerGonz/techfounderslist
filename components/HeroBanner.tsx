@@ -14,7 +14,7 @@ gsap.registerPlugin(useGSAP);
  * rather than two discrete steps. Respects prefers-reduced-motion by
  * freezing on the first phrase.
  */
-function RotatingPhrase({ phrases, intervalMs = 3400 }: { phrases: string[]; intervalMs?: number }) {
+function RotatingPhrase({ phrases, intervalMs = 3800 }: { phrases: string[]; intervalMs?: number }) {
   const elRef = useRef<HTMLSpanElement>(null);
 
   useGSAP(
@@ -36,15 +36,15 @@ function RotatingPhrase({ phrases, intervalMs = 3400 }: { phrases: string[]; int
             timeoutId = window.setTimeout(tick, intervalMs);
           },
         })
-          .to(el, { y: -6, filter: 'blur(4px)', opacity: 0, duration: 0.4, ease: 'power1.in' })
+          .to(el, { y: -5, filter: 'blur(9px)', opacity: 0, duration: 0.7, ease: 'sine.inOut' })
           .call(() => {
             el.textContent = phrases[next];
           })
           .fromTo(
             el,
-            { y: 6, filter: 'blur(4px)', opacity: 0 },
-            { y: 0, filter: 'blur(0px)', opacity: 1, duration: 0.9, ease: 'expo.out' },
-            '-=0.05'
+            { y: 5, filter: 'blur(9px)', opacity: 0 },
+            { y: 0, filter: 'blur(0px)', opacity: 1, duration: 1.3, ease: 'sine.out' },
+            '-=0.15'
           );
       };
 
