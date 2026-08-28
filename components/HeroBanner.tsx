@@ -8,12 +8,13 @@ import { IndexTicker } from './TelemetryTicker';
 gsap.registerPlugin(useGSAP);
 
 /**
- * Rotates through a list of short phrases with a vertical blur-flip
- * (old phrase blurs/slides out upward, new one blurs/slides in from below) —
- * the same beat as Vercel's domain-search headline. Respects
- * prefers-reduced-motion by freezing on the first phrase.
+ * Rotates through a list of short phrases with a restrained drift-and-blur
+ * crossfade — a few px of travel, not a full line-height slide. The exit and
+ * entrance overlap slightly so the eye reads it as one continuous motion
+ * rather than two discrete steps. Respects prefers-reduced-motion by
+ * freezing on the first phrase.
  */
-function RotatingPhrase({ phrases, intervalMs = 2600 }: { phrases: string[]; intervalMs?: number }) {
+function RotatingPhrase({ phrases, intervalMs = 3400 }: { phrases: string[]; intervalMs?: number }) {
   const elRef = useRef<HTMLSpanElement>(null);
 
   useGSAP(
@@ -35,14 +36,15 @@ function RotatingPhrase({ phrases, intervalMs = 2600 }: { phrases: string[]; int
             timeoutId = window.setTimeout(tick, intervalMs);
           },
         })
-          .to(el, { yPercent: -100, filter: 'blur(6px)', opacity: 0, duration: 0.35, ease: 'power2.in' })
+          .to(el, { y: -6, filter: 'blur(4px)', opacity: 0, duration: 0.4, ease: 'power1.in' })
           .call(() => {
             el.textContent = phrases[next];
           })
           .fromTo(
             el,
-            { yPercent: 100, filter: 'blur(6px)', opacity: 0 },
-            { yPercent: 0, filter: 'blur(0px)', opacity: 1, duration: 0.5, ease: 'power3.out' }
+            { y: 6, filter: 'blur(4px)', opacity: 0 },
+            { y: 0, filter: 'blur(0px)', opacity: 1, duration: 0.9, ease: 'expo.out' },
+            '-=0.05'
           );
       };
 
@@ -53,10 +55,8 @@ function RotatingPhrase({ phrases, intervalMs = 2600 }: { phrases: string[]; int
   );
 
   return (
-    <span className="inline-block overflow-hidden align-bottom">
-      <span ref={elRef} className="inline-block text-ledger-green">
-        {phrases[0]}
-      </span>
+    <span ref={elRef} className="inline-block text-ledger-green">
+      {phrases[0]}
     </span>
   );
 }

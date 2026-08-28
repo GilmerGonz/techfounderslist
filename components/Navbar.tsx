@@ -9,10 +9,6 @@ import { locales } from '@/i18n';
 const LOCALE_LABELS: Record<string, string> = {
   en: 'EN',
   es: 'ES',
-  zh: '中文',
-  de: 'DE',
-  ar: 'AR',
-  it: 'IT',
 };
 
 interface Category {

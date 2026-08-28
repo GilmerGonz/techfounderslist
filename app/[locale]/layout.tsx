@@ -15,10 +15,6 @@ export const metadata: Metadata = {
     languages: {
       en: '/en',
       es: '/es',
-      zh: '/zh',
-      de: '/de',
-      ar: '/ar',
-      it: '/it',
     },
   },
   openGraph: {
@@ -50,10 +46,9 @@ interface LocaleLayoutProps {
 
 export default function LocaleLayout({ children, params: { locale } }: LocaleLayoutProps) {
   const messages = useMessages();
-  const isRtl = locale === 'ar';
 
   return (
-    <html lang={locale} dir={isRtl ? 'rtl' : 'ltr'}>
+    <html lang={locale}>
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
