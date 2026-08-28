@@ -210,6 +210,10 @@ export function ClaimPositionModal({
       );
       return;
     }
+    if (amountCents % 100 !== 0) {
+      setErrorMessage(t('claimModal.wholeDollarsOnly'));
+      return;
+    }
     if (!companyName || !companyUrl || !ownerEmail) {
       setErrorMessage(t('claimModal.missingFields'));
       return;
@@ -356,25 +360,25 @@ export function ClaimPositionModal({
             role="dialog"
             aria-modal="true"
             aria-labelledby="claim-modal-title"
-            className="relative w-full max-w-lg rounded-lg border-hairline border-ink/10 bg-white px-10 py-8 text-ink sm:px-12 sm:py-10"
+            className="relative w-full max-w-md rounded-lg border-hairline border-ink/10 bg-white px-6 py-5 text-ink sm:px-8 sm:py-6"
           >
             <button
               onClick={onClose}
               aria-label="Close"
-              className="absolute end-6 top-6 text-ink-30 transition-colors hover:text-ink"
+              className="absolute end-5 top-5 text-ink-30 transition-colors hover:text-ink"
             >
           <X className="h-5 w-5" strokeWidth={1.5} />
         </button>
 
         {/* Header */}
-        <div className="border-b-hairline border-ink/10 pb-6">
-            <h3 id="claim-modal-title" className="font-display text-xl font-bold">{t('claimModal.title', { position })}</h3>
-          <p className="mt-1.5 text-xs text-ink-60">{t('claimModal.subtitle')}</p>
+        <div className="border-b-hairline border-ink/10 pb-4">
+            <h3 id="claim-modal-title" className="font-display text-lg font-bold">{t('claimModal.title', { position })}</h3>
+          <p className="mt-1 text-xs text-ink-60">{t('claimModal.subtitle')}</p>
         </div>
 
         {/* Displacement notice — factual, no apology */}
         {stage === 'form' && currentHolderName && (
-          <div className="mt-5 flex items-start gap-2.5 rounded-md bg-paper p-3.5 text-xs text-ink-60">
+          <div className="mt-4 flex items-start gap-2.5 rounded-md bg-paper p-3 text-xs text-ink-60">
             <ShieldAlert className="mt-0.5 h-4 w-4 shrink-0" strokeWidth={1.5} />
             <span>
               {t('claimModal.displacementWarning')}{' '}
@@ -464,8 +468,8 @@ export function ClaimPositionModal({
 
         {/* Stage A — details */}
         {stage === 'form' && (
-          <form onSubmit={handlePreparePayment} className="mt-7 space-y-6">
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <form onSubmit={handlePreparePayment} className="mt-5 space-y-3.5">
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
               <label className="block">
                 <span className="mb-1 block text-xs font-semibold">{t('claimModal.projectName')} *</span>
                 <input
@@ -475,7 +479,7 @@ export function ClaimPositionModal({
                   value={companyName}
                   onChange={(e) => setCompanyName(e.target.value)}
                   placeholder={t('claimModal.projectNamePlaceholder')}
-                  className="w-full rounded-sm border-hairline border-ink/15 bg-white px-4 py-2.5 text-sm placeholder:text-ink-30"
+                  className="w-full rounded-sm border-hairline border-ink/15 bg-white px-3.5 py-2 text-sm placeholder:text-ink-30"
                 />
               </label>
 
@@ -487,12 +491,12 @@ export function ClaimPositionModal({
                   value={companyUrl}
                   onChange={(e) => setCompanyUrl(e.target.value)}
                   placeholder={t('claimModal.projectUrlPlaceholder')}
-                  className="w-full rounded-sm border-hairline border-ink/15 bg-white px-4 py-2.5 text-sm placeholder:text-ink-30"
+                  className="w-full rounded-sm border-hairline border-ink/15 bg-white px-3.5 py-2 text-sm placeholder:text-ink-30"
                 />
               </label>
             </div>
 
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
               <label className="block">
                 <span className="mb-1 block text-xs font-semibold">{t('claimModal.ownerEmail')} *</span>
                 <input
@@ -501,7 +505,7 @@ export function ClaimPositionModal({
                   value={ownerEmail}
                   onChange={(e) => setOwnerEmail(e.target.value)}
                   placeholder={t('claimModal.ownerEmailPlaceholder')}
-                  className="w-full rounded-sm border-hairline border-ink/15 bg-white px-4 py-2.5 text-sm placeholder:text-ink-30"
+                  className="w-full rounded-sm border-hairline border-ink/15 bg-white px-3.5 py-2 text-sm placeholder:text-ink-30"
                 />
               </label>
 
@@ -512,7 +516,7 @@ export function ClaimPositionModal({
                   value={logoUrl}
                   onChange={(e) => setLogoUrl(e.target.value)}
                   placeholder="https://.../logo.png"
-                  className="w-full rounded-sm border-hairline border-ink/15 bg-white px-4 py-2.5 text-sm placeholder:text-ink-30"
+                  className="w-full rounded-sm border-hairline border-ink/15 bg-white px-3.5 py-2 text-sm placeholder:text-ink-30"
                 />
               </label>
             </div>
@@ -525,11 +529,11 @@ export function ClaimPositionModal({
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 placeholder={t('claimModal.descriptionPlaceholder')}
-                className="w-full rounded-sm border-hairline border-ink/15 bg-white px-4 py-2.5 text-sm placeholder:text-ink-30"
+                className="w-full rounded-sm border-hairline border-ink/15 bg-white px-3.5 py-2 text-sm placeholder:text-ink-30"
               />
             </label>
 
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
               <label className="block">
                 <span className="mb-1 block text-xs font-semibold">{t('claimModal.billingCountry')}</span>
                 <input
@@ -538,7 +542,7 @@ export function ClaimPositionModal({
                   value={billingCountry}
                   onChange={(e) => setBillingCountry(e.target.value)}
                   placeholder={t('claimModal.billingCountryPlaceholder')}
-                  className="w-full rounded-sm border-hairline border-ink/15 bg-white px-4 py-2.5 text-sm placeholder:text-ink-30"
+                  className="w-full rounded-sm border-hairline border-ink/15 bg-white px-3.5 py-2 text-sm placeholder:text-ink-30"
                 />
               </label>
               <label className="block">
@@ -549,13 +553,17 @@ export function ClaimPositionModal({
                   value={billingTaxId}
                   onChange={(e) => setBillingTaxId(e.target.value)}
                   placeholder={t('claimModal.billingTaxIdPlaceholder')}
-                  className="w-full rounded-sm border-hairline border-ink/15 bg-white px-4 py-2.5 text-sm placeholder:text-ink-30"
+                  className="w-full rounded-sm border-hairline border-ink/15 bg-white px-3.5 py-2 text-sm placeholder:text-ink-30"
                 />
               </label>
             </div>
 
-            {/* Amount — the one loud element, rendered as telemetry */}
-            <div className="rounded-md bg-paper p-5">
+            {/* Amount — the one loud element, rendered as telemetry.
+                Digits-only input (no decimal point can even be typed) so a
+                bid can never be misread or mis-entered as cents — at this
+                traffic volume, ambiguity here means real support tickets
+                and real refunds. */}
+            <div className="rounded-md bg-paper p-4">
               <div className="flex items-center justify-between text-xs">
                 <span className="font-semibold">{t('claimModal.bidAmount')}</span>
                 <span className="text-ink-60">
@@ -563,16 +571,23 @@ export function ClaimPositionModal({
                 </span>
               </div>
               <div className="relative mt-2">
+                <span className="pointer-events-none absolute inset-y-0 left-4 flex items-center font-data text-lg font-bold text-paper/60">
+                  $
+                </span>
                 <input
-                  type="number"
-                  step="0.01"
-                  min={(minRequiredCents / 100).toFixed(2)}
+                  type="text"
+                  inputMode="numeric"
+                  pattern="[0-9]*"
+                  autoComplete="off"
                   required
                   value={amountDollars}
-                  onChange={(e) => setAmountDollars(e.target.value)}
+                  onChange={(e) => setAmountDollars(e.target.value.replace(/[^0-9]/g, ''))}
                   aria-label={t('claimModal.bidAmount')}
-                  className="num-ltr w-full rounded-sm border-hairline border-ink/10 bg-ink px-5 py-3.5 text-right font-data text-lg font-bold font-tabular text-paper focus:outline-none"
+                  className="num-ltr w-full rounded-sm border-hairline border-ink/10 bg-ink py-3 pe-14 ps-8 text-right font-data text-lg font-bold font-tabular text-paper focus:outline-none"
                 />
+                <span className="pointer-events-none absolute inset-y-0 right-4 flex items-center text-xs font-semibold text-paper/60">
+                  USD
+                </span>
               </div>
             </div>
 
@@ -581,7 +596,7 @@ export function ClaimPositionModal({
               <button
                 type="submit"
                 disabled={processing || loadingQuote}
-                className="flex w-full items-center justify-center gap-2 rounded-sm bg-white border border-ink px-4 py-3.5 text-sm font-bold text-ink transition-transform hover:brightness-105 active:scale-[0.99] disabled:opacity-50"
+                className="flex w-full items-center justify-center gap-2 rounded-sm bg-white border border-ink px-4 py-3 text-sm font-bold text-ink transition-transform hover:brightness-105 active:scale-[0.99] disabled:opacity-50"
               >
               {processing || loadingQuote ? (
                 <Loader2 className="h-4 w-4 animate-spin" />
@@ -595,7 +610,7 @@ export function ClaimPositionModal({
         {/* Stage B — Payment (PayPal or Demo) */}
         {stage === 'payment' &&
           (demoMode ? (
-            <div className="mt-7 space-y-4">
+            <div className="mt-5 space-y-4">
               <div className="rounded-md bg-paper p-4 text-xs text-ink-60">
                 <p className="font-semibold text-ink">{t('claimModal.demoModeTitle')}</p>
                 <p className="mt-1.5">{t('claimModal.demoModeBody')}</p>
@@ -620,7 +635,7 @@ export function ClaimPositionModal({
               </button>
             </div>
           ) : paypalClientId && orderId ? (
-            <div className="mt-7">
+            <div className="mt-5">
               <PayPalScriptProvider
                 options={{ clientId: paypalClientId, currency: 'USD', intent: 'capture' }}
               >

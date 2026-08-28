@@ -63,6 +63,7 @@
     "continueToPayment": "Continuar al pago",
     "processing": "Confirmando\u2026",
     "tooLow": "El mínimo para reclamar esta posición es {amount}.",
+    "wholeDollarsOnly": "El monto debe ser en dólares completos, sin centavos.",
     "missingFields": "El nombre, la URL y el email del propietario son obligatorios.",
     "displacementWarning": "Esto desplazará al titular actual:",
     "paymentConfirmed": "Posición reclamada. Tu empresa ahora aparece en el índice.",

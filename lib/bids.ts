@@ -377,6 +377,13 @@ export async function claimPosition(
     throw new Error(`position must be an integer between 1 and ${MAX_POSITION}`);
   }
 
+  // Positions must always change hands over a whole dollar, never a few
+  // cents — reject anything that isn't a positive multiple of 100 cents
+  // before it ever reaches the minimum-increment check below.
+  if (!Number.isInteger(amountCents) || amountCents <= 0 || amountCents % 100 !== 0) {
+    throw new Error('amountCents must be a positive whole-dollar amount (a multiple of 100 cents).');
+  }
+
   if (hasDatabase()) {
     // Real money may already have been captured by the time this runs
     // (capture/webhook call this after a successful PayPal capture). A

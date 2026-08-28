@@ -68,6 +68,16 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    if (amountCents % 100 !== 0) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'Bids must be a whole dollar amount (no cents).',
+        },
+        { status: 400 }
+      );
+    }
+
     const quote = await getMinRequiredBid(categoryId, position);
     if (amountCents < quote.minRequiredCents) {
       return NextResponse.json(

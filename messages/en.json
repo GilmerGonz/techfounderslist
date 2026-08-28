@@ -63,6 +63,7 @@
     "continueToPayment": "Continue to payment",
     "processing": "Confirming\u2026",
     "tooLow": "Minimum to claim this position is {amount}.",
+    "wholeDollarsOnly": "The amount must be a whole dollar, no cents.",
     "missingFields": "Company name, URL, and owner email are required.",
     "displacementWarning": "This will displace the current holder:",
     "paymentConfirmed": "Position claimed. Your company is now listed.",
