@@ -868,6 +868,60 @@ export async function getLongestHeld(limit = 20) {
     });
 }
 
+/**
+ * Pick a random company that currently holds a claimed position, for the
+ * "surprise me" feature. Returns null when there's nothing claimed yet.
+ */
+export async function getRandomHeldCompany(): Promise<{
+  id: string;
+  name: string;
+  categorySlug: string;
+} | null> {
+  let rows: { id: string; name: string; categorySlug: string }[];
+
+  if (hasDatabase()) {
+    const entries = await prisma.currentIndex.findMany({
+      select: { company: { select: { id: true, name: true, category: { select: { slug: true } } } } },
+    });
+    rows = entries.map((e) => ({
+      id: e.company.id,
+      name: e.company.name,
+      categorySlug: e.company.category?.slug ?? '',
+    }));
+  } else {
+    rows = Array.from(mockStore.currentIndex.values()).map((item) => {
+      const company = mockStore.companies.get(item.companyId);
+      const category = mockStore.categories.find((c) => c.id === company?.categoryId);
+      return {
+        id: company?.id ?? item.companyId,
+        name: company?.name ?? 'Unknown',
+        categorySlug: category?.slug ?? '',
+      };
+    });
+  }
+
+  if (!rows.length) return null;
+  return rows[Math.floor(Math.random() * rows.length)];
+}
+
+/**
+ * All-time committed capital: the sum of every confirmed position claim since
+ * the site launched. Drives the big animated counter on the homepage.
+ */
+export async function getTotalCommittedCents(): Promise<number> {
+  if (hasDatabase()) {
+    const agg = await prisma.positionClaim.aggregate({
+      _sum: { amountCents: true },
+      where: { status: 'confirmed' },
+    });
+    return agg._sum.amountCents ?? 0;
+  }
+
+  return mockStore.claims
+    .filter((c) => c.status === 'confirmed')
+    .reduce((acc, c) => acc + c.amountCents, 0);
+}
+
 /** Reset store for tests. */
 export function _resetMockStore() {
   mockStore.currentIndex.clear();

@@ -27,6 +27,10 @@ const config: Config = {
           DEFAULT: "#1F4D3A",
           900: "#0F2A1F",
         },
+        "ledger-red": {
+          DEFAULT: "#9A3324",
+          900: "#5A1E15",
+        },
         brass: {
           DEFAULT: "#A9822F",
           900: "#4A3105",

@@ -1,0 +1,8 @@
+[
+  { "name": "SpaceX", "valuationUsd": 350000000000, "lastRoundDate": "2024-12-01", "sector": "Aerospace" },
+  { "name": "OpenAI", "valuationUsd": 157000000000, "lastRoundDate": "2024-10-02", "sector": "AI" },
+  { "name": "ByteDance", "valuationUsd": 268000000000, "lastRoundDate": "2023-12-01", "sector": "Consumer" },
+  { "name": "Stripe", "valuationUsd": 65000000000, "lastRoundDate": "2024-02-15", "sector": "Fintech" },
+  { "name": "Databricks", "valuationUsd": 62000000000, "lastRoundDate": "2024-12-17", "sector": "AI" },
+  { "name": "Anthropic", "valuationUsd": 61500000000, "lastRoundDate": "2025-03-03", "sector": "AI" }
+]

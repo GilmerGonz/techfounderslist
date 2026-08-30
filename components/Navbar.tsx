@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter, usePathname } from '@/navigation';
 import clsx from 'clsx';
+import { Shuffle } from 'lucide-react';
 import { locales } from '@/i18n';
 
 const LOCALE_LABELS: Record<string, string> = {
@@ -24,6 +25,7 @@ interface NavbarProps {
   onSelectCategory: (slug: string) => void;
   t: (key: string, values?: any) => string;
   onOpenSubmitModal: () => void;
+  onSurpriseMe?: () => void;
 }
 
 /**
@@ -39,6 +41,7 @@ export function Navbar({
   onSelectCategory,
   t,
   onOpenSubmitModal,
+  onSurpriseMe,
 }: NavbarProps) {
   const router = useRouter();
   const pathname = usePathname();
@@ -93,6 +96,16 @@ export function Navbar({
 
         {/* Locale switcher + outline CTA */}
         <div className="flex shrink-0 items-center gap-3">
+          {onSurpriseMe && (
+            <button
+              onClick={onSurpriseMe}
+              className="hidden items-center gap-1.5 rounded-sm px-2 py-2 text-[13px] font-medium text-ink-60 transition-colors hover:text-ink focus:outline-none md:inline-flex"
+            >
+              <Shuffle className="h-3.5 w-3.5" strokeWidth={1.5} aria-hidden="true" />
+              {t('common.surpriseMe')}
+            </button>
+          )}
+
           <label className="relative">
             <span className="sr-only">{t('common.language')}</span>
             <select

@@ -66,6 +66,20 @@ function clearPendingClaim(categoryId: string, position: number): void {
   }
 }
 
+/**
+ * Whole-dollar sanitizer for resumed claims. Legacy sessions (pre-whole-dollar
+ * restriction) may have saved `amountDollars` with a decimal, e.g. "1.00" or
+ * "12.75". Blindly stripping non-digits ("1.00" -> "100") would inflate $1 to
+ * $100, so parse the numeric figure and re-express it as an integer-dollar
+ * string ("1.00" -> "1"). That keeps the committed amount correct and always
+ * satisfies pattern="[0-9]*". Non-numeric/non-positive input -> "".
+ */
+function wholeDollarString(dollars: string): string {
+  const n = Number(dollars);
+  if (!Number.isFinite(n) || n <= 0) return '';
+  return String(Math.round(n));
+}
+
 interface ClaimPositionModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -153,7 +167,7 @@ export function ClaimPositionModal({
       setOwnerEmail(pending.ownerEmail);
       setBillingCountry(pending.billingCountry);
       setBillingTaxId(pending.billingTaxId);
-      setAmountDollars(pending.amountDollars);
+      setAmountDollars(wholeDollarString(pending.amountDollars));
       setCompanyId(pending.companyId);
       setCompanyToken(pending.companyToken);
     }
@@ -173,8 +187,8 @@ export function ClaimPositionModal({
           const resumedCents = Math.round(parseFloat(pending?.amountDollars ?? '') * 100);
           setAmountDollars(
             pending && Number.isFinite(resumedCents) && resumedCents >= data.quote.minRequiredCents
-              ? pending.amountDollars
-              : (data.quote.minRequiredCents / 100).toFixed(2)
+              ? wholeDollarString(pending.amountDollars)
+              : wholeDollarString(String(data.quote.minRequiredCents / 100))
           );
           setCurrentHolderName(data.quote.currentHolder?.name ?? null);
         }

@@ -7,6 +7,8 @@ import { Navbar } from '@/components/Navbar';
 import { HeroBanner } from '@/components/HeroBanner';
 import { LeaderboardTable } from '@/components/LeaderboardTable';
 import { LiveActivityFeed } from '@/components/LiveActivityFeed';
+import { GlobalMarketsSection } from '@/components/GlobalMarketsSection';
+import { TotalCommitted } from '@/components/TotalCommitted';
 import { ClaimPositionModal } from '@/components/ClaimPositionModal';
 import { SubmitCompanyModal } from '@/components/SubmitCompanyModal';
 
@@ -42,6 +44,10 @@ export default function HomePage({ params: { locale } }: { params: { locale: str
   const [isClaimModalOpen, setIsClaimModalOpen] = useState(false);
   const [targetPosition, setTargetPosition] = useState<number>(1);
   const [isSubmitModalOpen, setIsSubmitModalOpen] = useState(false);
+
+  // "Surprise me" spotlight — which holder to scroll to & flash
+  const [highlightCompanyId, setHighlightCompanyId] = useState<string | null>(null);
+  const [highlightSeq, setHighlightSeq] = useState(0);
 
   // Fetch categories
   useEffect(() => {
@@ -87,6 +93,24 @@ export default function HomePage({ params: { locale } }: { params: { locale: str
     setIsClaimModalOpen(true);
   };
 
+  const handleSurpriseMe = async () => {
+    try {
+      const res = await fetch(`/api/${locale}/companies/random`);
+      const data = await res.json();
+      if (!data.success || !data.company?.id || !data.company?.categorySlug) return;
+      setHighlightCompanyId(null);
+      setActiveCategorySlug(data.company.categorySlug);
+      const cat = categories.find((c) => c.slug === data.company.categorySlug);
+      if (cat) setActiveCategoryId(cat.id);
+      setHighlightCompanyId(data.company.id);
+      setHighlightSeq((n) => n + 1);
+    } catch {
+      // Random fetch failed — keep the board as-is, harmless.
+    }
+  };
+
+  const handleHighlightHandled = () => setHighlightCompanyId(null);
+
   const champion = rankings.find((r) => r.position === 1);
   const categoryName =
     categories.find((c) => c.slug === activeCategorySlug)?.name ?? activeCategorySlug;
@@ -100,6 +124,7 @@ export default function HomePage({ params: { locale } }: { params: { locale: str
         onSelectCategory={handleSelectCategory}
         t={t as any}
         onOpenSubmitModal={() => setIsSubmitModalOpen(true)}
+        onSurpriseMe={handleSurpriseMe}
       />
 
       <main className="flex-1">
@@ -110,6 +135,8 @@ export default function HomePage({ params: { locale } }: { params: { locale: str
           t={t as any}
         />
 
+        <TotalCommitted locale={locale} t={t as any} />
+
         <div aria-live="polite" aria-atomic="false">
           <LeaderboardTable
             categories={categories}
@@ -119,11 +146,17 @@ export default function HomePage({ params: { locale } }: { params: { locale: str
             locale={locale}
             t={t as any}
             onClaimPosition={handleOpenClaimModal}
+            highlightCompanyId={highlightCompanyId}
+            highlightNonce={highlightSeq}
+            onHighlightHandled={handleHighlightHandled}
           />
         </div>
 
         {/* Ambient feed sits below the list, deliberately understated */}
         <LiveActivityFeed locale={locale} categorySlug={activeCategorySlug} t={t as any} />
+
+        {/* Independent of the paid index above — real-world market context */}
+        <GlobalMarketsSection locale={locale} t={t as any} />
       </main>
 
       <footer className="border-t-hairline bg-paper">

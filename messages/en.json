@@ -13,7 +13,9 @@
     "liveActivity": "Activity log",
     "priceHistory": "Position history",
     "reignLeaderboard": "Longest-held positions",
-    "language": "Language"
+    "language": "Language",
+    "surpriseMe": "Surprise me",
+    "totalCommitted": "All-time committed"
   },
   "hero": {
     "liveIn": "Live \u00b7 {category}",
@@ -22,8 +24,8 @@
     "support": "Claim a position by committing more capital than the current holder. The minimum increase is $1.",
     "topSpotLabel": "#1 right now: {name}",
     "topSpotHint": "The current position holder has committed this amount.",
-    "openSpotTitle": "This position is open",
-    "openSpotBody": "Claim it for $1."
+    "openSpotTitle": "Now open for IPO",
+    "openSpotBody": "Open to commitment from $1."
   },
   "leaderboard": {
     "rank": "Position",
@@ -35,8 +37,9 @@
     "outbid": "Outranked",
     "reigning": "Holding since {duration}",
     "outbidAgo": "Outranked {duration} ago",
-    "openSpot": "Open position",
+    "openSpot": "Now open for IPO",
     "claimFrom": "from {amount}",
+    "championReign": "Champion · {duration}",
     "emptyTitle": "No position claimed in this category yet.",
     "emptyBody": "Be the first company to hold a position here.",
     "emptyState": "No position claimed yet."
@@ -94,5 +97,36 @@
     "refundPolicy": "Commitments are final upon server confirmation.",
     "minIncrement": "Min increment +$1.00 USD",
     "paypalSecured": "Payments secured by PayPal"
+  },
+  "globalMarkets": {
+    "kicker": "Markets, for reference",
+    "sectionTitle": "Global Markets",
+    "sectionSubtitle": "Real-world context — private valuations, public equities and digital assets in one place. Independent of the index above.",
+    "kpis": {
+      "topCrypto": "Leading crypto today",
+      "mostVolatile": "Most volatile today",
+      "topStartup": "Top private valuation",
+      "capitalRepresented": "Capital represented",
+      "starupCount": "{count, plural, one {# private company tracked} other {# private companies tracked}}"
+    },
+    "chart": {
+      "title": "Daily move — percent",
+      "period": "24h",
+      "loading": "Loading live moves…",
+      "empty": "Market data is unavailable right now."
+    },
+    "live": {
+      "title": "Live quotes",
+      "loading": "Fetching live quotes…",
+      "empty": "Quote data is unavailable right now.",
+      "stale": "Showing last known prices."
+    },
+    "startups": {
+      "title": "Top Private Valuations",
+      "reference": "Latest marked rounds",
+      "lastRound": "Last round: {date}",
+      "loading": "Loading valuations…",
+      "empty": "Valuation data unavailable right now."
+    }
   }
 }

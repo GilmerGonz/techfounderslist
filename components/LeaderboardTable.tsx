@@ -7,6 +7,7 @@ import gsap from 'gsap';
 import clsx from 'clsx';
 import { ExternalLink, Plus, BadgeCheck } from 'lucide-react';
 import { IndexTicker } from './TelemetryTicker';
+import { companyTicker } from '@/lib/companyTicker';
 
 gsap.registerPlugin(useGSAP);
 
@@ -40,6 +41,9 @@ interface LeaderboardTableProps {
   locale: string;
   t: (key: string, values?: any) => string;
   onClaimPosition: (position: number) => void;
+  highlightCompanyId?: string | null;
+  highlightNonce?: number;
+  onHighlightHandled?: () => void;
 }
 
 function formatDuration(fromMs: number): string {
@@ -64,6 +68,9 @@ export function LeaderboardTable({
   locale,
   t,
   onClaimPosition,
+  highlightCompanyId,
+  highlightNonce = 0,
+  onHighlightHandled,
 }: LeaderboardTableProps) {
   const listRef = useRef<HTMLOListElement>(null);
   const animatedKeyRef = useRef('');
@@ -111,6 +118,62 @@ export function LeaderboardTable({
     if (Object.keys(next).length > 0) setOutbidAt((o) => ({ ...o, ...next }));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [rankings]);
+
+  // "Surprise me" — when a company to spotlight arrives (possibly after a
+  // category switch), scroll it into view and give it a brief brass flash.
+  // Re-fires on every click (highlightNonce), even when the same company is
+  // picked twice. Follows the useGSAP pattern: honors prefers-reduced-motion
+  // (instant flash, no scroll smoothing) and always returns the card to its
+  // paper-white background once the flash fades.
+  useGSAP(
+    () => {
+      if (!highlightCompanyId) return;
+      let attempts = 0;
+
+      const spotlight = () => {
+        attempts += 1;
+        const el = listRef.current?.querySelector(
+          `[data-company-id="${CSS.escape(highlightCompanyId)}"]`
+        );
+        if (!el) {
+          // Category just switched — the new rankings may not be loaded yet.
+          // Poll the DOM briefly without churning the dependency array.
+          if (attempts < 24) gsap.delayedCall(0.25, spotlight);
+          return;
+        }
+
+        const row = (el as HTMLElement).querySelector(':scope > div');
+        const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+        if (prefersReducedMotion) {
+          (el as HTMLElement).scrollIntoView({ behavior: 'auto', block: 'center' });
+          gsap.set(row || el, { backgroundColor: 'rgba(186,154,74,0.18)' });
+        } else {
+          (el as HTMLElement).scrollIntoView({ behavior: 'smooth', block: 'center' });
+          gsap.fromTo(
+            row || el,
+            { backgroundColor: 'rgba(186,154,74,0.18)' },
+            {
+              backgroundColor: 'rgba(255,255,255,0)',
+              duration: 1.6,
+              ease: 'power2.out',
+              clearProps: 'backgroundColor',
+            }
+          );
+        }
+
+        // Clear the spotlight once the flash has played so the next click
+        // re-fires cleanly (see highlightNonce) and nothing stays glued.
+        gsap.delayedCall(1.8, () => {
+          if (prefersReducedMotion) gsap.set(row || el, { clearProps: 'backgroundColor' });
+          onHighlightHandled?.();
+        });
+      };
+
+      spotlight();
+    },
+    { dependencies: [highlightCompanyId, highlightNonce] }
+  );
 
   const VISIBLE_SPOTS = 20;
   const fullPositions: Array<{ position: number; ranking?: Ranking }> = Array.from(
@@ -192,6 +255,7 @@ export function LeaderboardTable({
             return (
               <motion.li
                 key={ranking.company.id}
+                data-company-id={ranking.company.id}
                 layout
                 transition={{ duration: 0.22, ease: 'easeOut' }}
               >
@@ -201,9 +265,12 @@ export function LeaderboardTable({
                   {/* Rank cluster */}
                   <div className="flex min-w-0 items-center gap-4">
                     {isTop1 ? (
-                      <span className="flex w-7 shrink-0 flex-col items-end">
+                      <span className="flex w-14 shrink-0 flex-col items-start">
                         <span className="font-display text-lg font-bold text-ink num-ltr">1</span>
                         <span className="mt-0.5 h-[2px] w-6 bg-brass" />
+                        <span className="mt-1.5 whitespace-nowrap rounded-[3px] bg-brass/10 px-1.5 py-0.5 font-data font-tabular num-ltr text-[10px] leading-none text-brass">
+                          {t('leaderboard.championReign', { duration: formatDuration(heldMs) })}
+                        </span>
                       </span>
                     ) : (
                       <span className="w-7 shrink-0 text-end font-display text-lg font-bold text-ink num-ltr">
@@ -229,6 +296,9 @@ export function LeaderboardTable({
                       <div className="flex items-center gap-1.5">
                          <span className="truncate font-display text-[15px] font-medium text-ink">
                            {ranking.company.name}
+                         </span>
+                         <span className="shrink-0 rounded-[3px] border border-ink/15 px-1 py-px font-data font-tabular num-ltr text-[10px] leading-none text-ink-60">
+                           ${companyTicker(ranking.company.name)}
                          </span>
                          {ranking.company.verified && (
                            <BadgeCheck

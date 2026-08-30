@@ -26,6 +26,7 @@ next-env.d.ts
 # logs
 dev.log
 dev.err
+ts.log
 
 # generated SQL helper (contains no secrets, but is a one-off scratch file)
 supabase_setup.sql

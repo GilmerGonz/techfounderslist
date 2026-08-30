@@ -13,7 +13,9 @@
     "liveActivity": "Registro de actividad",
     "priceHistory": "Historial de posición",
     "reignLeaderboard": "Posiciones mantenidas más tiempo",
-    "language": "Idioma"
+    "language": "Idioma",
+    "surpriseMe": "Sorpréndeme",
+    "totalCommitted": "Comprometido en total"
   },
   "hero": {
     "liveIn": "En vivo \u00b7 {category}",
@@ -22,8 +24,8 @@
     "support": "Reclama una posición comprometiendo más capital que el titular actual. El aumento mínimo es $1.",
     "topSpotLabel": "#1 ahora mismo: {name}",
     "topSpotHint": "El titular actual ha comprometido este monto.",
-    "openSpotTitle": "Esta posición está abierta",
-    "openSpotBody": "Reclámala por $1."
+    "openSpotTitle": "Ahora en IPO",
+    "openSpotBody": "Abierta a compromisos desde $1."
   },
   "leaderboard": {
     "rank": "Posición",
@@ -35,8 +37,9 @@
     "outbid": "Desplazado",
     "reigning": "En posición desde {duration}",
     "outbidAgo": "Desplazado hace {duration}",
-    "openSpot": "Posición abierta",
+    "openSpot": "Ahora en IPO",
     "claimFrom": "desde {amount}",
+    "championReign": "Campeón · {duration}",
     "emptyTitle": "Ninguna posición reclamada en este índice.",
     "emptyBody": "Sé la primera empresa en ocupar una posición aquí.",
     "emptyState": "Ninguna posición reclamada aún."
@@ -94,5 +97,36 @@
     "refundPolicy": "Los compromisos son finales tras la confirmación del servidor.",
     "minIncrement": "Incremento mínimo +$1.00 USD",
     "paypalSecured": "Pagos protegidos por PayPal"
+  },
+  "globalMarkets": {
+    "kicker": "Mercados, como referencia",
+    "sectionTitle": "Mercado Global",
+    "sectionSubtitle": "Contexto del mundo real — valoraciones privadas, renta variable pública y activos digitales en un mismo lugar. Independiente del índice anterior.",
+    "kpis": {
+      "topCrypto": "Cripto líder hoy",
+      "mostVolatile": "Más volátil hoy",
+      "topStartup": "Mayor valoración privada",
+      "capitalRepresented": "Capital representado",
+      "starupCount": "{count, plural, one {# empresa privada en seguimiento} other {# empresas privadas en seguimiento}}"
+    },
+    "chart": {
+      "title": "Movimiento del día — porcentaje",
+      "period": "24 h",
+      "loading": "Cargando movimientos en vivo…",
+      "empty": "Los datos de mercado no están disponibles por ahora."
+    },
+    "live": {
+      "title": "Cotizaciones en vivo",
+      "loading": "Obteniendo cotizaciones en vivo…",
+      "empty": "Los datos de cotización no están disponibles por ahora.",
+      "stale": "Mostrando los últimos precios conocidos."
+    },
+    "startups": {
+      "title": "Valoraciones Privadas Destacadas",
+      "reference": "Últimas rondas señaladas",
+      "lastRound": "Última ronda: {date}",
+      "loading": "Cargando valoraciones…",
+      "empty": "Datos de valoración no disponibles por ahora."
+    }
   }
 }
